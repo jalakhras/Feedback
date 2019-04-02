@@ -6,9 +6,15 @@ using System.Web.Mvc;
 
 namespace Feedback.Controllers
 {
-    public class HomeController : Controller
+    public class TaskController : Controller
     {
-        public ActionResult Index()
+      
+        public ActionResult ViewAll()
+        {
+            return View();
+        }
+
+        public ActionResult CreateEdit()
         {
             return View();
         }

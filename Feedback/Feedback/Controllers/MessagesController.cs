@@ -6,9 +6,14 @@ using System.Web.Mvc;
 
 namespace Feedback.Controllers
 {
-    public class HomeController : Controller
+    public class MessagesController : Controller
     {
-        public ActionResult Index()
+        public ActionResult ViewAll()
+        {
+            return View();
+        }
+
+        public ActionResult Reply()
         {
             return View();
         }
