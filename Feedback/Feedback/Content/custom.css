@@ -51,4 +51,7 @@ html body {
 .panel-yellow a, .panel-red a {
     color: #428bca !important;
 }
+span.field-validation-error {
+    color: red !important;
+}
 
