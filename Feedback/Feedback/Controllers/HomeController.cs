@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Feedback.Models;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace Feedback.Controllers
@@ -14,7 +12,27 @@ namespace Feedback.Controllers
         }
         public ActionResult Survey()
         {
-            return PartialView();
+            var context = new FeedbackContext();
+            var admins = context.Admins.OrderByDescending(x => x.Votes.Count).ToList();
+
+            if (Session["HasVoted"] != null)
+            {
+                return PartialView("SurveyResults", admins);
+            }
+
+            return PartialView(admins);
+        }
+        [HttpPost]
+        public ActionResult Survey(int adminId)
+        {
+            var context = new FeedbackContext();
+            context.Votes.Add(new Vote() { AdminId = adminId });
+            context.SaveChanges();
+
+            var admins = context.Admins.OrderByDescending(x => x.Votes.Count).ToList();
+
+            Session["HasVoted"] = true;
+            return RedirectToAction("Index");
         }
         public ActionResult Suggestion()
         {
