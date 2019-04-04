@@ -54,4 +54,7 @@ html body {
 span.field-validation-error {
     color: red !important;
 }
+div.validation-summary-errors {
+    color: red !important;
+}
 
