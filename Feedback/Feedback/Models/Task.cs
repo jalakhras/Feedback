@@ -1,15 +1,12 @@
 ﻿using Feedback.Helpers;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 
 namespace Feedback.Models
 {
     [Bind(Exclude = "AssignedTo, AssociatedMessage, Category")]
-    public class Task : IValidatableObject
+    public class Task 
     {
         public int Id { get; set; }
         [Required]
@@ -36,16 +33,5 @@ namespace Feedback.Models
         public virtual Message AssociatedMessage { get; set; }
         public virtual Category Category { get; set; }
 
-        public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
-        {
-            var errors = new List<ValidationResult>();
-
-            if (Completed && string.IsNullOrWhiteSpace(Notes))
-            {
-                errors.Add(new ValidationResult("Notes are required when completing a task"));
-            }
-
-            return errors;
-        }
     }
 }
