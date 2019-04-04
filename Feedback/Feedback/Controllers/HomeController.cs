@@ -12,5 +12,13 @@ namespace Feedback.Controllers
         {
             return View();
         }
+        public ActionResult Survey()
+        {
+            return PartialView();
+        }
+        public ActionResult Suggestion()
+        {
+            return PartialView();
+        }
     }
 }
