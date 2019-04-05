@@ -28,11 +28,11 @@ namespace Feedback.Controllers
             var context = new FeedbackContext();
             context.Votes.Add(new Vote() { AdminId = adminId });
             context.SaveChanges();
-
             var admins = context.Admins.OrderByDescending(x => x.Votes.Count).ToList();
 
+
             Session["HasVoted"] = true;
-            return RedirectToAction("Index");
+            return PartialView("SurveyResults",admins);
         }
         public ActionResult Suggestion()
         {
