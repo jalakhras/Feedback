@@ -8,7 +8,17 @@ namespace Feedback.Controllers
     {
         public ActionResult Index()
         {
-            return View();
+            var context = new FeedbackContext();
+
+            var dash = new DashBoardVM()
+            {
+                Messages = context.Threads
+                    .SelectMany(x => x.Messages).OrderByDescending(c => c.Created).ToList()
+                    .GroupBy(y => y.MessageThreadId).Select(grp => grp.FirstOrDefault()).ToList().Take(5),
+                Tasks = context.Tasks.OrderByDescending(x => x.Created).Take(5)
+            };
+
+            return View(dash);
         }
         public ActionResult Survey()
         {
