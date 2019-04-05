@@ -20,6 +20,7 @@ namespace Feedback.Controllers
 
             return View(dash);
         }
+
         public ActionResult Survey()
         {
             var context = new FeedbackContext();
@@ -32,28 +33,32 @@ namespace Feedback.Controllers
 
             return PartialView(admins);
         }
+
         [HttpPost]
         public ActionResult Survey(int adminId)
         {
             var context = new FeedbackContext();
             context.Votes.Add(new Vote() { AdminId = adminId });
             context.SaveChanges();
+
             var admins = context.Admins.OrderByDescending(x => x.Votes.Count).ToList();
 
-
             Session["HasVoted"] = true;
-            return PartialView("SurveyResults",admins);
+            return PartialView("SurveyResults", admins);
         }
+
         public ActionResult Suggestion()
         {
             return PartialView();
         }
+
         [HttpPost]
         public ActionResult Suggestion(string suggestion)
         {
-            //send Email
-            var emailSend = true;
-            return PartialView("SuggestionResult", emailSend);
+            //Send email, return true or false for success
+            var emailSent = true;
+
+            return PartialView("SuggestionResult", emailSent);
         }
     }
 }
