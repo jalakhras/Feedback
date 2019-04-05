@@ -7,16 +7,16 @@ namespace Feedback.Controllers
 {
     public class MessagesController : Controller
     {
-        //private FeedbackContext _context;
+        private readonly FeedbackContext _context;
 
-        //public MessagesController(FeedbackContext context)
-        //{
-        //    _context = context;
-        //}
+        public MessagesController(FeedbackContext context)
+        {
+            _context = context;
+        }
 
         public ActionResult ViewAll()
         {
-            FeedbackContext _context = new FeedbackContext();
+            
             var messages = _context.Threads
                     .SelectMany(x => x.Messages).OrderByDescending(c => c.Created).ToList()
                     .GroupBy(y => y.MessageThreadId).Select(grp => grp.FirstOrDefault()).ToList();
@@ -25,8 +25,6 @@ namespace Feedback.Controllers
         }
         public ActionResult Reply(int Id)
         {
-            FeedbackContext _context = new FeedbackContext();
-
             var thread = _context.Threads.First(x => x.MessageThreadId == Id)
                 .Messages.OrderBy(x => x.Created).ToList();
 
@@ -47,7 +45,6 @@ namespace Feedback.Controllers
         [HttpPost]
         public ActionResult Reply(int id, string content)
         {
-            FeedbackContext _context = new FeedbackContext();
             var thread = _context.Threads.FirstOrDefault(x => x.MessageThreadId == id);
             if (thread != null)
             {

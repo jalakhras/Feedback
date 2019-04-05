@@ -6,16 +6,21 @@ namespace Feedback.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly FeedbackContext _context; 
+
+        public HomeController(FeedbackContext context)
+        {
+            _context = context; 
+        }
         public ActionResult Index()
         {
-            var context = new FeedbackContext();
 
             var dash = new DashBoardVM()
             {
-                Messages = context.Threads
+                Messages = _context.Threads
                     .SelectMany(x => x.Messages).OrderByDescending(c => c.Created).ToList()
                     .GroupBy(y => y.MessageThreadId).Select(grp => grp.FirstOrDefault()).ToList().Take(5),
-                Tasks = context.Tasks.OrderByDescending(x => x.Created).Take(5)
+                Tasks = _context.Tasks.OrderByDescending(x => x.Created).Take(5)
             };
 
             return View(dash);
@@ -23,8 +28,7 @@ namespace Feedback.Controllers
 
         public ActionResult Survey()
         {
-            var context = new FeedbackContext();
-            var admins = context.Admins.OrderByDescending(x => x.Votes.Count).ToList();
+            var admins = _context.Admins.OrderByDescending(x => x.Votes.Count).ToList();
 
             if (Session["HasVoted"] != null)
             {
@@ -37,11 +41,10 @@ namespace Feedback.Controllers
         [HttpPost]
         public ActionResult Survey(int adminId)
         {
-            var context = new FeedbackContext();
-            context.Votes.Add(new Vote() { AdminId = adminId });
-            context.SaveChanges();
+            _context.Votes.Add(new Vote() { AdminId = adminId });
+            _context.SaveChanges();
 
-            var admins = context.Admins.OrderByDescending(x => x.Votes.Count).ToList();
+            var admins = _context.Admins.OrderByDescending(x => x.Votes.Count).ToList();
 
             Session["HasVoted"] = true;
             return PartialView("SurveyResults", admins);

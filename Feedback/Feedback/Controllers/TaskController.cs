@@ -8,23 +8,25 @@ namespace Feedback.Controllers
 {
     public class TaskController : Controller
     {
-
+        private readonly FeedbackContext _context;
+        public TaskController(FeedbackContext context)
+        {
+            _context = context; 
+        }
         public ActionResult ViewAll()
         {
-            var context = new FeedbackContext();
-            var tasks = context.Tasks.OrderByDescending(x => x.Created).ToList();
+            var tasks = _context.Tasks.OrderByDescending(x => x.Created).ToList();
             return View(tasks);
         }
 
 
         public ActionResult CreateEdit(int Id = 0)
         {
-            var context = new FeedbackContext();
-            ViewBag.Categories = context.Categories
+            ViewBag.Categories = _context.Categories
                 .Select(x => new SelectListItem() { Text = x.Name, Value = x.Id.ToString() }).ToList();
             if (Id != 0)
             {
-                var task = context.Tasks.FirstOrDefault(x => x.Id == Id);
+                var task = _context.Tasks.FirstOrDefault(x => x.Id == Id);
                 var mappedTask = Mapper.Map<TaskVM>(task);
                 mappedTask.AssociatedMessageDisplay = task.AssociatedMessage.Subject;
 
@@ -37,10 +39,9 @@ namespace Feedback.Controllers
         [HttpPost]
         public ActionResult CreateEdit(Task task)
         {
-            var context = new FeedbackContext();
             if (ModelState.IsValid)
             {
-                var editTask = context.Tasks.FirstOrDefault(x => x.Id == task.Id);
+                var editTask = _context.Tasks.FirstOrDefault(x => x.Id == task.Id);
                 if (editTask != null)
                 {
                     //Updating Task
@@ -52,34 +53,32 @@ namespace Feedback.Controllers
                     editTask.AssociatedMessageId = task.AssociatedMessageId;
                     editTask.Completed = task.Completed;
                     editTask.Notes = task.Notes;
-                    context.Entry(editTask).State = System.Data.Entity.EntityState.Modified;
+                    _context.Entry(editTask).State = System.Data.Entity.EntityState.Modified;
                 }
                 else
                 {
                     //New Task
-                    context.Tasks.Add(task);
+                    _context.Tasks.Add(task);
                     task.Created = DateTime.Now;
                 }
-                context.SaveChanges();
+                _context.SaveChanges();
                 return RedirectToAction("ViewAll");
             }
 
-            ViewBag.Categories = context.Categories
+            ViewBag.Categories = _context.Categories
                 .Select(x => new SelectListItem() { Text = x.Name, Value = x.Id.ToString() }).ToList();
             return View(task);
         }
         public ActionResult MessageSuggestions(string term)
         {
-            var context = new FeedbackContext();
-            var messages = context.Messages.Where(x => x.Subject.Contains(term))
+            var messages = _context.Messages.Where(x => x.Subject.Contains(term))
                 .Select(x => new { Label = x.Subject, Id = x.Id }).ToList();
             return Json(messages, JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult AssignToSuggestions(string term)
         {
-            var context = new FeedbackContext();
-            var Admins = context.Admins.Where(x => x.Username.Contains(term))
+            var Admins = _context.Admins.Where(x => x.Username.Contains(term))
                 .Select(x => new { Label = x.Username, Id = x.Id }).ToList();
             return Json(Admins, JsonRequestBehavior.AllowGet);
         }
