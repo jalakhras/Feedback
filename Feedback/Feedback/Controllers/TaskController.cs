@@ -1,4 +1,5 @@
-﻿using Feedback.Models;
+﻿using AutoMapper;
+using Feedback.Models;
 using System;
 using System.Linq;
 using System.Web.Mvc;
@@ -23,7 +24,11 @@ namespace Feedback.Controllers
                 .Select(x => new SelectListItem() { Text = x.Name, Value = x.Id.ToString() }).ToList();
             if (Id != 0)
             {
-                return View(context.Tasks.FirstOrDefault(x => x.Id == Id));
+                var task = context.Tasks.FirstOrDefault(x => x.Id == Id);
+                var mappedTask = Mapper.Map<TaskVM>(task);
+                mappedTask.AssociatedMessageDisplay = task.AssociatedMessage.Subject;
+
+                return View(mappedTask);
             }
 
             return View();
