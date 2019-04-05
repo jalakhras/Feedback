@@ -1,4 +1,5 @@
 ﻿using Feedback.Models;
+using System;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -22,9 +23,47 @@ namespace Feedback.Controllers
 
             return View(messages);
         }
-        public ActionResult Reply()
+        public ActionResult Reply(int Id)
         {
-            return View();
+            FeedbackContext _context = new FeedbackContext();
+
+            var thread = _context.Threads.First(x => x.MessageThreadId == Id)
+                .Messages.OrderBy(x => x.Created).ToList();
+
+            if (thread != null)
+            {
+                ReplyVM vm = new ReplyVM()
+                {
+                    Messages = thread,
+                    Subject = thread.FirstOrDefault().Subject,
+                    MessageThreadId = Id
+                };
+                return View(vm);
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+        [HttpPost]
+        public ActionResult Reply(int id, string content)
+        {
+            FeedbackContext _context = new FeedbackContext();
+            var thread = _context.Threads.FirstOrDefault(x => x.MessageThreadId == id);
+            if (thread != null)
+            {
+                var newMsg = new Message();
+                newMsg.Subject = thread.Messages.First().Subject;
+                newMsg.Created = DateTime.Now;
+                newMsg.Content = content;
+                newMsg.MessageThreadId = id;
+                var index = HttpContext.User.Identity.Name.IndexOf("\\") + 1;
+                newMsg.Author = HttpContext.User.Identity.Name.Substring(index);
+
+                _context.Messages.Add(newMsg);
+                _context.SaveChanges();
+            }
+
+            return RedirectToAction("ViewAll");
         }
     }
 }
