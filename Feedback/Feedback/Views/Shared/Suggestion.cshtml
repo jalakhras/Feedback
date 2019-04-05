@@ -1,4 +1,4 @@
-﻿<div class="panel panel-green widget">
+﻿<div id="suggestionWidget" class="panel panel-green widget">
     <div class="panel-heading">
         <div class="row">
             <div class="col-xs-3">
@@ -13,7 +13,16 @@
         <div class="row">
             <div class="col-xs-12 feature-request">
                 <p>Have a feature request or suggestion for how we can improve this app? Let us know! Send us a suggestion.</p>
-                @using (Html.BeginForm("Suggestion", "Home"))
+                @{
+                    var options = new AjaxOptions()
+                    {
+                        HttpMethod = "Post",
+                        InsertionMode = InsertionMode.ReplaceWith,
+                        UpdateTargetId = "suggestionWidget"
+                    };
+                }
+
+                @using (Ajax.BeginForm("Suggestion", "Home", options))
                 {
                     <textarea class="form-control" id="suggestion" rows="5" type="text" name="suggestion"></textarea><br />
                     <input type="submit" value="Submit" class="improvement btn btn-primary pull-right" />

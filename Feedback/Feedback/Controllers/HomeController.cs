@@ -42,14 +42,8 @@ namespace Feedback.Controllers
         public ActionResult Suggestion(string suggestion)
         {
             //send Email
-            if (!string.IsNullOrWhiteSpace(suggestion))
-            {
-                TempData["Status"] = "Your message has been submitted";
-            }
-            else {
-                TempData["Status"] = "Your message could not be submitted";
-            }
-            return RedirectToAction("Index");
+            var emailSend = true;
+            return PartialView("SuggestionResult", emailSend);
         }
     }
 }
