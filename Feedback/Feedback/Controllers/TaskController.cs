@@ -60,5 +60,20 @@ namespace Feedback.Controllers
                 .Select(x => new SelectListItem() { Text = x.Name, Value = x.Id.ToString() }).ToList();
             return View(task);
         }
+        public ActionResult MessageSuggestions(string term)
+        {
+            var context = new FeedbackContext();
+            var messages = context.Messages.Where(x => x.Subject.Contains(term))
+                .Select(x => new { Label = x.Subject, Id = x.Id }).ToList();
+            return Json(messages, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult AssignToSuggestions(string term)
+        {
+            var context = new FeedbackContext();
+            var Admins = context.Admins.Where(x => x.Username.Contains(term))
+                .Select(x => new { Label = x.Username, Id = x.Id }).ToList();
+            return Json(Admins, JsonRequestBehavior.AllowGet);
+        }
     }
 }
